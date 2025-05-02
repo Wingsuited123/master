@@ -1,3 +1,3 @@
-# Project for my Masters Thesis
+# Project for my Master's Thesis
 
-i hate my life
+Contains the configurations of the Manager and App modules which are discussed in the thesis.

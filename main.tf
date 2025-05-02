@@ -1,5 +1,5 @@
 module "app_full" {
-  source = "./modules/cognito-at-edge-app"
+  source = "git::git@github.com:Wingsuited123/master-app?ref=v1.0.0"
 
   providers = {
     aws.us_east_1 = aws.us_east_1
@@ -12,8 +12,27 @@ module "app_full" {
   }
 
   # CloudFront
-  cf_aliases   = ["valibaba.click"]
-  cf_origin_id = "S3"
+  cf_aliases             = ["valibaba.click"]
+  cf_origin_id           = "S3"
+  cf_default_root_object = "index.html"
+  cf_price_class         = "PriceClass_100"
+  cf_http_version        = "http2and3"
+  cf_ipv6_enabled        = true
+
+  cf_custom_error_responses = [
+    {
+      error_code         = 404
+      response_code      = 200
+      response_page_path = "/index.html"
+    }
+  ]
+
+  cf_restrictions = {
+    geo_restriction = {
+      restriction_type = "whitelist"
+      locations        = ["AT", "DE"]
+    }
+  }
 
   cf_cache_behavior_default = {
     target_origin_id       = "S3"
@@ -47,26 +66,26 @@ module "app_full" {
         source_dir = "${path.module}/lambda/origin_response"
       }
     }
-    cache_policy    = {
+    cache_policy = {
       min_ttl     = 0
       max_ttl     = 31536000
       default_ttl = 86400
       parameters_in_cache_key_and_forwarded_to_origin = {
         cookies_config = {
           cookie_behavior = "whitelist"
-          cookies         = {
+          cookies = {
             items = ["cookie1", "cookie2"]
           }
         }
         headers_config = {
           header_behavior = "whitelist"
-          headers         = {
+          headers = {
             items = ["header1", "header2"]
           }
         }
         query_strings_config = {
           query_string_behavior = "whitelist"
-          query_strings         = {
+          query_strings = {
             items = ["query1", "query2"]
           }
         }
@@ -75,26 +94,26 @@ module "app_full" {
     origin_request_policy = {
       cookies_config = {
         cookie_behavior = "whitelist"
-        cookies         = {
+        cookies = {
           items = ["cookie1", "cookie2"]
         }
       }
       headers_config = {
         header_behavior = "whitelist"
-        headers         = {
+        headers = {
           items = ["header1", "header2"]
         }
       }
       query_strings_config = {
         query_string_behavior = "whitelist"
-        query_strings         = {
+        query_strings = {
           items = ["query1", "query2"]
         }
       }
     }
     response_headers_policy = {
       cors_config = {
-        access_control_allow_credentials =  true
+        access_control_allow_credentials = true
         access_control_max_age_sec       = 3600
         origin_override                  = true
         access_control_allow_headers = {
@@ -136,8 +155,8 @@ module "app_full" {
       }
       security_headers_config = {
         content_security_policy = {
-          content_security_policy = "frame-ancestors 'none'; default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'"
-          override = true
+          content_security_policy = "style-src 'self' 'unsafe-inline';"
+          override                = true
         }
         content_type_options = {
           override = true
@@ -148,7 +167,7 @@ module "app_full" {
         }
         referrer_policy = {
           referrer_policy = "same-origin"
-          override = true
+          override        = true
         }
         strict_transport_security = {
           access_control_max_age_sec = 63072000
@@ -206,9 +225,9 @@ module "app_full" {
           install_dependencies = true
         }
       }
-      cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingOptimized
-      origin_request_policy_id = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf" # CORS-S3Origin
-        response_headers_policy_id = "60669652-455b-4ae9-85a4-c4c02393f86c" # SimpleCORS
+      cache_policy_id            = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingOptimized
+      origin_request_policy_id   = "88a5eaf4-2fd4-4709-b370-b4c650ea3fcf" # CORS-S3Origin
+      response_headers_policy_id = "60669652-455b-4ae9-85a4-c4c02393f86c" # SimpleCORS
     }
   ]
 
@@ -234,7 +253,7 @@ module "app_full" {
 }
 
 module "app_minimal" {
-  source = "./modules/cognito-at-edge-app"
+  source = "git::git@github.com:Wingsuited123/master-app?ref=v1.0.0"
 
   providers = {
     aws.us_east_1 = aws.us_east_1
@@ -260,7 +279,7 @@ module "app_minimal" {
 }
 
 module "app_disabled" {
-  source = "./modules/cognito-at-edge-app"
+  source = "git::git@github.com:Wingsuited123/master-app?ref=v1.0.0"
 
   providers = {
     aws.us_east_1 = aws.us_east_1
@@ -281,7 +300,7 @@ module "app_disabled" {
 }
 
 module "manager" {
-  source = "./modules/cognito-at-edge-manager"
+  source = "git::git@github.com:Wingsuited123/master-manager?ref=v1.0.0"
 
   identifier  = "master-thesis-manager"
   account_ids = ["294556365148"]
